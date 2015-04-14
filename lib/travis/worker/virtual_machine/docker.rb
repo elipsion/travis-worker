@@ -36,7 +36,7 @@ module Travis
         def create_server(opts = {})
           image = image_for_language(opts[:language])
 
-          info "Using image '#{image} for language #{opts[:language] || '[nil]'}"
+          info "Using image '#{image}' for language #{opts[:language] || '[nil]'}"
 
           retryable(:tries => 5) do
             @container = create_container(image.id)
