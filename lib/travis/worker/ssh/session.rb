@@ -1,8 +1,6 @@
 require 'shellwords'
 require 'travis/worker/utils/buffer'
 require 'travis/worker/utils/hard_timeout'
-require 'travis/worker/ssh/connector/net_ssh'
-require 'travis/worker/ssh/connector/sshjr'
 require 'travis/support/logging'
 require 'base64'
 require 'hashr'
@@ -21,8 +19,8 @@ module Travis
         end
 
         CONNECTORS = {
-          net_ssh: Connector::NetSSH,
-          sshjr:   Connector::SSHJr,
+          net_ssh: 'Connector::NetSSH',
+          sshjr:   'Connector::SSHJr',
         }
 
         log_header { "#{name}:shell:session" }
@@ -39,7 +37,9 @@ module Travis
         def initialize(name, config)
           @name = name
           @config = Hashr.new(config)
-          connector_class = CONNECTORS[@config.connector || :net_ssh]
+          connector_name = @config.connector || :net_ssh
+          require "travis/worker/ssh/connector/#{connector_name}"
+          connector_class = CONNECTORS[connector_name].constantize
           @connector = connector_class.new(@config)
         end
 
