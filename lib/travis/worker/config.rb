@@ -55,7 +55,7 @@ module Travis
 
       protected
 
-        LOCATIONS = ['./config/', '~/.']
+        LOCATIONS = ['./config/', '~/.', '~/.travis/']
 
         def read
           local = read_yml(path)
@@ -76,7 +76,7 @@ module Travis
           filename = config_filename(environment)
           paths    = LOCATIONS.map { |p| "#{p}#{filename}" }
 
-          if existing_path = paths.detect { |p| File.exists?(p) }
+          if existing_path = paths.detect { |p| File.exists?(File.expand_path(p)) }
             existing_path
           else
             raise "Could not find a configuration file. Valid paths are: #{paths.join(', ')}"
